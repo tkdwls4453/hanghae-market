@@ -48,6 +48,9 @@ public class PostService {
     }
 
     public void deletePost(Long id) {
+        if(!postRepository.existsById(id)){
+            throw new IllegalArgumentException("존재하지 않는 게시물 ID 입니다.");
+        }
         postRepository.deleteById(id);
     }
 }
