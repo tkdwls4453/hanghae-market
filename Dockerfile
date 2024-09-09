@@ -1,20 +1,12 @@
-# 빌드를 위한 이미지
-FROM gradle:7.6-jdk17 AS build
-
-# 작업 디렉토리 설정
-WORKDIR /home/gradle/project
-
-# 소스 코드 복사
-COPY --chown=gradle:gradle . .
-
-# Gradle 빌드 실행
-RUN gradle build --no-daemon
-
-# 애플리케이션 실행을 위한 이미지
+# 최신 17-jdk 이미지로 부터 시작
 FROM openjdk:17-jdk
 
-# 빌드된 JAR 파일 복사
-COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
+# 인자 정리
+ARG JAR_FILE=build/libs/*.jar
 
-# 컨테이너에서 실행될 명령어
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# 앞에는 HOST OS의 현재 폴더를 의미
+# 뒤에는 컨테이너의 현재 폴더(WORKDIR)를 의미
+COPY ${JAR_FILE} app.jar
+
+# docker container에서 실행되는 명령어
+ENTRYPOINT ["java","-jar","/app.jar"]
